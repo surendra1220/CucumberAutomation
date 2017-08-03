@@ -11,6 +11,10 @@ public class Repository {
 	public static final String Menu_Link = "//span[contains(text(), 'MENU')]";
 	public static final String Travel_Link = "//a[contains(text(), 'Travel Info')]";
 	public static final String SpecialAss_Link = "//a[contains(text(), 'Special Assistance')]";
+	public static final String FirstName_txt = "xpath=//input[@aria-label='First name']";
+	public static final String Login_Button = "xpath=//label[@id='loginbutton']";
+	public static final String Login_ID = "id=loginbutton";
+	
 	
 	
 

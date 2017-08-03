@@ -25,11 +25,14 @@ import java.util.*;
 public class CucumberStepDef extends Repository{
 	
 	
-	public WebDriver driver;
+	public static WebDriver driver;
 	public String ChromeURL = null;
 	public Scenario scenario;
 	public String scenarioName;
 
+	//WebActions actions = new WebActions();
+	
+	
 
 	//@Before
 	//@Given("^Spicejet is the test case$")
@@ -37,28 +40,28 @@ public class CucumberStepDef extends Repository{
 	    this.scenario = scenario;
 	    scenarioName = scenario.getName();
 	    System.out.println(scenarioName);
-	    
-
-	}*/
+}*/
 	
 	@Given ("^'(.*)' is the test case$")
-	//@Given("^Spicejet is the test case$")
-	public void BasicTest(String testcaseName) throws Exception 
+	public void SetUp(String testcaseName) throws Exception 
 	{
-
-		
 		WebActions.getData("Sheet1", testcaseName);
+		WebActions.InitiateBrowser(WebActions.browserName);
+		
+		WebActions.getURL();
+		WebActions.wait("30");
 
+		/*driver.findElement(By.xpath()).sendKeys(WebActions.testdata.get("Last Name"));
+		driver.findElement(By.xpath(xpathExpression))*/
 		
-		System.setProperty("webdriver.chrome.driver", "F:\\Selenium\\Libraries\\chromedriver_win32\\chromedriver_win32_2.exe");
-		driver = new ChromeDriver();
-		driver.manage().window().maximize();
+		//WebActions.elementlocator(FirstName_txt);
+		WebActions.type(FirstName_txt, "Last Name");
+		WebActions.wait("10");
+		//WebActions.Click(Login_Button);
+		WebActions.Click(Login_ID);
 		
-		driver.get("https://www.facebook.com/");
-		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-		driver.findElement(By.xpath("//input[@aria-label='First name']")).sendKeys(WebActions.testdata.get("Last Name"));
+		//driver.findElement(By.xpath("asdfjasdjfkasjdfjkas"))
 		
-		//if(WebActions.testdata.containsKey(key))
 		
 	}
 	
