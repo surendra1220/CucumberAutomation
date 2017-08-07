@@ -1,22 +1,37 @@
 package StepDefinition;
 
+import gherkin.formatter.model.ScenarioOutline;
+
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.gargoylesoftware.htmlunit.javascript.host.Set;
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
 
 import cucumber.api.Scenario;
+import cucumber.api.java.After;
 import cucumber.api.java.Before;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
+import runner.Constants;
 import runner.Repository;
 import runner.WebActions;
 
@@ -29,31 +44,108 @@ public class CucumberStepDef extends Repository{
 	public String ChromeURL = null;
 	public Scenario scenario;
 	public String scenarioName;
+	ExtentReports extent;
+	ExtentTest logger;
 
 	//WebActions actions = new WebActions();
-	
-	
 
-	//@Before
-	//@Given("^Spicejet is the test case$")
-/*	public void before(Scenario scenario) throws Exception {
-	    this.scenario = scenario;
-	    scenarioName = scenario.getName();
-	    System.out.println(scenarioName);
-}*/
+	@Before
+	public void before(Scenario scenario) throws Exception {
+		this.scenario = scenario;
+		scenarioName = scenario.getName();
+		System.out.println("Scenario name is :" + scenarioName);
+		WebActions.getData("Learning", scenarioName);
+				
+		WebActions.InitiateBrowser(WebActions.browserName);	
+		scenario.write("Browser initiated");
+		WebActions.getURL("URL");
+		scenario.write("Launched Application URL");
+		WebActions.wait("30");
+	}
 	
-	@Given ("^'(.*)' is the test case$")
+	@After
+	public void tearDown(Scenario scenario)
+	{
+		scenario.write("Finished scenario");
+		if(scenario.isFailed())
+		{
+			scenario.embed(((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES), "image/png");
+		}
+		System.out.println("Test Environment Destroyed");
+		System.out.println("---------------------------------------");
+		extent.flush();
+		extent.close();
+		driver.close();
+		driver.quit();
+	}
+	
+	
+/*	@AfterMethod
+	public void getResult(ITestResult result){
+		if(result.getStatus() == ITestResult.FAILURE){
+			logger.log(LogStatus.FAIL, "Test Case Failed is "+result.getName());
+			logger.log(LogStatus.FAIL, "Test Case Failed is "+result.getThrowable());
+		}else if(result.getStatus() == ITestResult.SKIP){
+			logger.log(LogStatus.SKIP, "Test Case Skipped is "+result.getName());
+		}
+		// ending test
+		//endTest(logger) : It ends the current test and prepares to create HTML report
+		extent.endTest(logger);
+	}*/
+	
+	@Given ("^The test case to automate is '(.*)'$")
 	public void SetUp(String testcaseName) throws Exception 
 	{
-		WebActions.getData("Sheet1", testcaseName);
-		WebActions.InitiateBrowser(WebActions.browserName);
-		
-		WebActions.getURL();
+		scenario.write("Getting data from test data sheet");
+		WebActions.getData("Learning", testcaseName);
+		WebActions.InitiateBrowser(WebActions.browserName);		
+		WebActions.getURL("URL");
 		WebActions.wait("30");
-
-		/*driver.findElement(By.xpath()).sendKeys(WebActions.testdata.get("Last Name"));
-		driver.findElement(By.xpath(xpathExpression))*/
+	}
+	
+	@When ("^user clicks on Login button$")
+	public void ClickOnLogin() throws Exception 
+	{
+		WebActions.wait("30");
+		WebActions.Click(FlipkartLogin_Link);
+		//WebActions.WaitTillElementFound(Username_txt);
+		//WebActions.WaitTillElementFound();
+		/*WebDriverWait wait = (new WebDriverWait(driver, 30));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@autocomplete='on']/div[3]/button")));*/
+		System.out.println("Popup verified");
+	}
+	
+	@And ("^user enters Username and Password$")
+	public void userCredentials() throws Exception 
+	{
+		//WebActions.wait("30");
+		Thread.sleep(5000);
+		WebActions.Click(Username_txt);
+		WebActions.type(Username_txt, "Username");
+		WebActions.Click(Password_txt);
+		WebActions.type(Password_txt, "Password");
+		WebActions.Click(FlipkartSubmit_Button);	
+		/*WebDriverWait wait = (new WebDriverWait(driver, 30));
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[contains(text(), 'Track Order')]")));*/
 		
+		/*Wait wait = new FluentWait(driver)    
+		.withTimeout(30, SECONDS)    
+		.pollingEvery(5, SECONDS)   
+		.ignoring(NoSuchElementException.class);
+		WebElement foo = wait.until(new Function() {    
+		public WebElement apply(WebDriver driver) {    
+		return driver.findElement(By.id("foo"));    
+		}
+		});*/
+		
+//		System.out.println("Track order link verified");
+//		WebActions.Click(TrackOrder_Link);
+		
+	}
+	
+	/*@Given ("^The test case to automate is new value '(.*)'$")
+	public void userCredentials(String testcaseName) throws Exception 
+	{
 		//WebActions.elementlocator(FirstName_txt);
 		WebActions.type(FirstName_txt, "Last Name");
 		WebActions.wait("10");
@@ -63,7 +155,7 @@ public class CucumberStepDef extends Repository{
 		//driver.findElement(By.xpath("asdfjasdjfkasjdfjkas"))
 		
 		
-	}
+	}*/
 	
 	
 	

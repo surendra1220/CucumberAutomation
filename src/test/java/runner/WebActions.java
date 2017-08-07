@@ -15,8 +15,10 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import net.sourceforge.htmlunit.corejs.javascript.ast.ThrowStatement;
 import net.sourceforge.htmlunit.corejs.javascript.regexp.SubString;
 
+import org.apache.bcel.verifier.structurals.ExceptionHandler;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
@@ -25,6 +27,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import StepDefinition.CucumberStepDef;
 
@@ -84,10 +88,10 @@ public class WebActions extends CucumberStepDef{
 		} 
 	}
 	
-	public static void getURL() throws Exception
+	public static void getURL(String url) throws Exception
 	{
 		try{
-		driver.get(Constants.URL);
+		driver.get(WebActions.testdata.get(url));
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -104,7 +108,7 @@ public class WebActions extends CucumberStepDef{
 		
 	}
 	
-	public static String elementlocator(String locator)
+	public static String elementlocator_Old(String locator)
 	{
 		if(locator.contains("xpath")){
 			locator = locator.substring(6);
@@ -120,26 +124,28 @@ public class WebActions extends CucumberStepDef{
 		
 	}
 	
-	public static String elementlocator1(String locator) {
-		String[] locators = locator.split("=");
-		String loc1 = locators[0];
-		String loc2 = locators[1];
-		if (loc1.contains("xpath")) {
-			// locator = locator.substring(6);
-			System.out.println("local 2 is " + loc2);
-
+	public static By elementlocator(String locator)
+	{
+		if(locator.startsWith("xpath")){
+			locator = locator.substring(6);	
+			return By.xpath(locator);
+		}else if(locator.startsWith("id")){
+			locator = locator.substring(3);
+			return By.id(locator);
+		}else if(locator.startsWith("css")){
+			locator = locator.substring(4);
+			return By.cssSelector(locator);
+		}else {
+		return null;
 		}
-		return loc2;
-		// return null;
-
 	}
 	
-	public static void type(String locator, String value) {
+	public static void type_Old(String locator, String value) {
 		String[] locators = locator.split("=");
 		String loc1 = locators[0];
 		System.out.println("local 1 is :"+loc1);
 		//String loc2 = locators[1];
-		String loc = elementlocator(locator);
+		String loc = elementlocator_Old(locator);
 		if (loc1.equals("xpath")) {
 			driver.findElement(By.xpath(loc)).sendKeys(
 					WebActions.testdata.get(value));
@@ -150,31 +156,58 @@ public class WebActions extends CucumberStepDef{
 			driver.findElement(By.cssSelector(loc)).sendKeys(
 					WebActions.testdata.get(value));
 		}
-		
-		
-	
 	}
 	
-	/*public static void type(String locator, String value) {
-		String loc = elementlocator(locator);
-		driver.findElement(By.xpath(loc)).sendKeys(
-				WebActions.testdata.get(value));
-	}*/
+	public static void type(String locator, String value) {
+		String[] locators = locator.split("=");
+		String loc1 = locators[0];
+		//System.out.println("local 1 is :"+loc1);
+		By loc = elementlocator(locator);
+		if (loc1.equals("xpath")) {
+			driver.findElement(loc).sendKeys(
+					WebActions.testdata.get(value));
+		}else if(loc1.equals("id")){
+			driver.findElement(loc).sendKeys(
+					WebActions.testdata.get(value));
+		}else if(loc1.equals("css")){
+			driver.findElement(loc).sendKeys(
+					WebActions.testdata.get(value));
+		}
+	}
 
-	public static void Click(String locator)
+	public static void Click(String locator) 
 	{
 		String[] locators = locator.split("=");
 		String loc1 = locators[0];
-		System.out.println("local 1 is :"+loc1);
+		//System.out.println("local 1 is :"+loc1);
 		//String loc2 = locators[1];
-		String loc = elementlocator(locator);
-		if (loc1.equals("xpath")) {
-			driver.findElement(By.xpath(loc)).click();
+		By loc = elementlocator(locator);
+		if(loc1.equals("xpath")) {
+			driver.findElement(loc).click();
 		}else if(loc1.equals("id")){
-			driver.findElement(By.id(loc)).click();
+			driver.findElement(loc).click();
 		}else if(loc1.equals("css")){
-			driver.findElement(By.cssSelector(loc)).click();
+			driver.findElement(loc).click();
 		}
 	}
+	
+	public static void WaitTillElementFound(String locator) 
+	{
+		By loca = elementlocator(locator);
+		
+	/*	WebElement wait = (new WebDriverWait(driver,
+				Integer.parseInt(timeoutsec))).until(ExpectedConditions
+				.visibilityOfElementLocated(loca));*/
+		
+		try{
+		WebDriverWait wait = (new WebDriverWait(driver, 30));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(loca));
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	
+	
 	
 }

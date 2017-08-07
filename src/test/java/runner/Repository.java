@@ -14,6 +14,15 @@ public class Repository {
 	public static final String FirstName_txt = "xpath=//input[@aria-label='First name']";
 	public static final String Login_Button = "xpath=//label[@id='loginbutton']";
 	public static final String Login_ID = "id=loginbutton";
+	//-----------------------------------------------------------------------------------------------------
+	public static final String FlipkartLogin_Link = "xpath=//a[contains(text(), 'Log In')]";
+	public static final String Username_txt = "xpath=//input[@type='text' and @class='_2zrpKA']";
+	public static final String Password_txt = "xpath=//input[@type='password']";
+	//public static final String Credentials_Popup = "xpath=//button[contains(text(), '')]";
+	public static final String FlipkartSubmit_Button = "xpath=//form[@autocomplete='on']/div[3]/button";
+	public static final String TrackOrder_Link = "xpath=//a[contains(text(), 'Track Order')]";
+	
+	
 	
 	
 	
